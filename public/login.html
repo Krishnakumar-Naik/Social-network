@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<style>
+    .ttle{
+        font-size: 25px;
+    }
+    .card{
+        align-content: center;
+        align-items: center;
+        align-self: center;
+        background-color: rgb(148, 178, 178);
+        border-style: double;
+
+    }
+</style>
+
+<body>
+
+    <div class="card">
+
+    <div class="ttle" align="center">
+        <h1>Login</h1>
+    </div> <br>
+    <div class="frm" align="center">
+        <form action="/login" method="POST">
+            <input type="text" name="username" placeholder="Username" required> <br> <br>
+            <input type="password" name="password" placeholder="Password" required> <br> <br>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+    <div class="btn" align="center">
+        <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+    </div>
+
+</div>
+</body>
+
+</html>

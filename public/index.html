@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Social Network</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Mini Social Network</h1>
+        <a href="/logout">Logout</a>
+    </header>
+
+    <main>
+        <section id="post-form">
+            <h2>Create a Post</h2>
+            <form id="create-post-form" action="/add-post" method="POST" enctype="multipart/form-data">
+                <input type="text" name="caption" placeholder="Enter caption" required>
+                <input type="file" name="image" accept="image/*">
+                <button type="submit">Post</button>
+            </form>
+        </section>
+
+        <section id="feed">
+            <h2>Feed</h2>
+            <div id="posts-container"></div>
+        </section>
+
+        <section id="friends">
+            <h2>Friends</h2>
+            <form id="friend-form">
+                <input type="text" id="friend-username" placeholder="Enter username to send friend request" required>
+                <button type="submit">Send Friend Request</button>
+            </form>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
