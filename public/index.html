@@ -14,6 +14,7 @@
 
     <main>
         <section id="post-form">
+<!--             uploading post section -->
             <h2>Create a Post</h2>
             <form id="create-post-form" action="/add-post" method="POST" enctype="multipart/form-data">
                 <input type="text" name="caption" placeholder="Enter caption" required>
@@ -23,11 +24,13 @@
         </section>
 
         <section id="feed">
+<!--             uploaded post will be shown here -->
             <h2>Feed</h2>
             <div id="posts-container"></div>
         </section>
 
         <section id="friends">
+<!--             friend request section -->
             <h2>Friends</h2>
             <form id="friend-form">
                 <input type="text" id="friend-username" placeholder="Enter username to send friend request" required>
