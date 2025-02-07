@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Handle post form submission
-    postForm.addEventListener('submit', function(event) {
+    postForm.addEventListener('submit', function(event) { //after clicking submit
         event.preventDefault();
         const username = document.getElementById('username').value;
         const message = document.getElementById('message').value;
