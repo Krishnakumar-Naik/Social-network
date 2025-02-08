@@ -26,7 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
         const username = document.getElementById('username').value;
         const message = document.getElementById('message').value;
-
+        
+        // add post
         if (username && message) {
             fetch('/add-post', {
                 method: 'POST',
