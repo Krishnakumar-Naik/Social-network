@@ -1,161 +1,206 @@
-// server.js
 const express = require('express');
-const path = require('path');
-const multer = require('multer');
-const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const bcrypt = require('bcryptjs');
+const mysql = require('mysql2');
+const multer = require('multer');
+const path = require('path');
 
 const app = express();
-const port = 3000;
+const PORT = 3000;
 
-// Middleware to parse form data
-app.use(express.urlencoded({ extended: true }));
+// Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-// Set up session
+// Session Configuration
 app.use(session({
-  secret: 'your-secret-key',
-  resave: false,
-  saveUninitialized: true,
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true
 }));
 
-// In-memory "databases"
-let users = [];  // Store users
-let posts = [];  // Store posts
-let friends = {}; // Store friends (friend requests)
-
-// Image upload setup using Multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
+// MySQL Connection
+const db = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'social_network'
 });
 
+db.connect(err => {
+    if (err) {
+        console.error('MySQL Connection Error: ' + err.message);
+    } else {
+        console.log('✅ Connected to MySQL Database');
+    }
+});
+
+// Multer Configuration for File Uploads
+const storage = multer.diskStorage({
+    destination: './public/uploads/',
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
 const upload = multer({ storage: storage });
 
-// Serve static files (for images)
-app.use(express.static('public'));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Home route
+// Home Page
 app.get('/', (req, res) => {
-  if (req.session.user) {
+    if (!req.session.user) return res.redirect('/login');
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
-  } else {
-    res.redirect('/login');
-  }
 });
 
-// Login page
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+// Fetch Logged-in User Details
+app.get('/user', (req, res) => {
+    if (!req.session.user) return res.json({ loggedIn: false });
+
+    db.query('SELECT username FROM users WHERE id = ?', [req.session.user], (err, results) => {
+        if (err) throw err;
+        res.json({ loggedIn: true, username: results[0].username });
+    });
 });
 
-// Signup page
+// Signup Page
 app.get('/signup', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'signup.html'));
+    res.sendFile(path.join(__dirname, 'public', 'signup.html'));
 });
 
-// Handle user signup
+// User Signup
 app.post('/signup', async (req, res) => {
-  const { username, password } = req.body;
+    const { username, password } = req.body;
 
-  // Check if username exists
-  if (users.some(user => user.username === username)) {
-    return res.send('Username already exists.');
-  }
+    db.query('SELECT * FROM users WHERE username = ?', [username], async (err, results) => {
+        if (results.length > 0) return res.send('❌ Username already exists.');
 
-  // Hash password before storing
-  const hashedPassword = await bcrypt.hash(password, 10);
-  users.push({ username, password: hashedPassword });
-  res.redirect('/login');
+        const hashedPassword = await bcrypt.hash(password, 10);
+        db.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword], (err) => {
+            if (err) throw err;
+            res.redirect('/login');
+        });
+    });
 });
 
-// Handle user login
-app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
+// Login Page
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
 
-  const user = users.find(user => user.username === username);
-  if (!user) return res.send('User not found.');
+// User Login
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
 
-  const isPasswordCorrect = await bcrypt.compare(password, user.password);
-  if (isPasswordCorrect) {
-    req.session.user = username; // Store the username in session
-    res.redirect('/');
-  } else {
-    res.send('Incorrect password.');
-  }
+    db.query('SELECT * FROM users WHERE username = ?', [username], async (err, results) => {
+        if (results.length === 0) return res.send('❌ User not found.');
+
+        const user = results[0];
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+        if (isPasswordCorrect) {
+            req.session.user = user.id;
+            res.redirect('/');
+        } else {
+            res.send('❌ Incorrect password.');
+        }
+    });
 });
 
 // Logout
 app.get('/logout', (req, res) => {
-  req.session.destroy(() => {
-    res.redirect('/login');
-  });
+    req.session.destroy(() => {
+        res.redirect('/login');
+    });
 });
 
-// Post an image and caption
+// Create a Post
 app.post('/add-post', upload.single('image'), (req, res) => {
-  const { caption } = req.body;
-  const imageUrl = req.file ? /uploads/${req.file.filename} : null;
-  const username = req.session.user;
+    if (!req.session.user) return res.redirect('/login');
 
-  if (username) {
-    const newPost = { username, caption, imageUrl, date: new Date() };
-    posts.push(newPost);
-    res.redirect('/');
-  } else {
-    res.redirect('/login');
-  }
+    const { caption } = req.body;
+    const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+    const userId = req.session.user;
+
+    db.query('INSERT INTO posts (user_id, caption, image_url) VALUES (?, ?, ?)', [userId, caption, image_url], (err) => {
+        if (err) throw err;
+        res.redirect('/');
+    });
 });
 
-// Fetch all posts
+// Fetch Posts (Feed)
 app.get('/posts', (req, res) => {
-  res.json(posts);
+    db.query(
+        'SELECT users.username, posts.caption, posts.image_url, posts.created_at FROM posts JOIN users ON posts.user_id = users.id ORDER BY posts.created_at DESC',
+        (err, results) => {
+            if (err) throw err;
+            res.json(results);
+        }
+    );
 });
 
-// Send friend request
-app.post('/add-friend', (req, res) => {
-  const { friendUsername } = req.body;
-  const currentUsername = req.session.user;
+// Send Friend Request
+app.post('/send-friend-request', (req, res) => {
+    const { friendUsername } = req.body;
+    const userId = req.session.user;
 
-  if (!currentUsername || currentUsername === friendUsername) {
-    return res.send('Invalid action.');
-  }
+    db.query('SELECT id FROM users WHERE username = ?', [friendUsername], (err, results) => {
+        if (results.length === 0) return res.json({ message: 'User not found!' });
 
-  if (!friends[friendUsername]) {
-    friends[friendUsername] = [];
-  }
-
-  friends[friendUsername].push({ username: currentUsername, status: 'pending' });
-
-  res.send('Friend request sent.');
+        const friendId = results[0].id;
+        db.query('INSERT INTO friends (user_id, friend_id, status) VALUES (?, ?, "pending")', [userId, friendId], (err) => {
+            if (err) throw err;
+            res.json({ message: 'Friend request sent!' });
+        });
+    });
 });
 
-// Accept or reject friend request
+// Fetch Friend Requests
+app.get('/friend-requests', (req, res) => {
+    const userId = req.session.user;
+
+    db.query(
+        'SELECT users.username FROM friends JOIN users ON friends.user_id = users.id WHERE friend_id = ? AND status = "pending"',
+        [userId],
+        (err, results) => {
+            if (err) throw err;
+            res.json(results);
+        }
+    );
+});
+
+// Accept/Ignore Friend Request
 app.post('/respond-friend-request', (req, res) => {
-  const { friendUsername, action } = req.body;
-  const currentUsername = req.session.user;
+    const { friendUsername, action } = req.body;
+    const userId = req.session.user;
 
-  if (action === 'accept') {
-    // Accept the friend request
-    const request = friends[friendUsername].find(req => req.username === currentUsername);
-    if (request) {
-      request.status = 'accepted';
-    }
-    res.send('Friend request accepted.');
-  } else if (action === 'reject') {
-    // Reject the friend request
-    friends[friendUsername] = friends[friendUsername].filter(req => req.username !== currentUsername);
-    res.send('Friend request rejected.');
-  } else {
-    res.send('Invalid action.');
-  }
+    db.query('SELECT id FROM users WHERE username = ?', [friendUsername], (err, results) => {
+        if (results.length === 0) return res.json({ message: 'User not found!' });
+
+        const friendId = results[0].id;
+        const status = action === 'accept' ? 'accepted' : 'ignored';
+
+        db.query('UPDATE friends SET status = ? WHERE user_id = ? AND friend_id = ?', [status, friendId, userId], (err) => {
+            if (err) throw err;
+            res.json({ message: `Friend request ${status}.` });
+        });
+    });
 });
 
-app.listen(port, () => {
-  console.log(Server running at http://localhost:${port});
+// Fetch Friends List
+app.get('/friends', (req, res) => {
+    const userId = req.session.user;
+
+    db.query(
+        'SELECT users.username FROM friends JOIN users ON friends.friend_id = users.id WHERE friends.user_id = ? AND status = "accepted"',
+        [userId],
+        (err, results) => {
+            if (err) throw err;
+            res.json(results);
+        }
+    );
+});
+
+
+app.listen(PORT, () => {
+    console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
