@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             if (data.loggedIn) {
                 currentUsername = data.username;
-                navUsername.textContent = `Welcome, ${currentUsername}`;
+                navUsername.textContent = `Welcome, ${currentUsername}`;//disply username in nav
             }
         })
         .catch(error => console.error('Error fetching user info:', error));
