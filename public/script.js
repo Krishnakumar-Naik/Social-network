@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentUsername = ''; // Store logged-in user's username
 
     // Fetch and display logged-in username
-    fetch('/user')
+    fetch('/user-info')
         .then(response => response.json())
         .then(data => {
             if (data.loggedIn) {
