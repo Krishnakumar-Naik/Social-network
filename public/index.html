@@ -19,19 +19,13 @@
 
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar for Friends and Requests -->
             <aside class="col-md-3 bg-light p-3 vh-100">
-                <h4>Send Friend Request</h4>
-                <form id="send-friend-request" class="mb-3">
-                    <input type="text" id="friend-username" class="form-control" placeholder="Enter username" required>
-                    <button type="submit" class="btn btn-primary mt-2">Send Request</button>
-                </form>
+                <h4>Chat</h4>
+<div id="chat-container" class="chat-box"></div>
+<form id="chat-form">
+    <a href="http://localhost:4000" class="btn btn-primary">Go to Chat</a>
+</form>
 
-                <h4>Friend Requests</h4>
-                <ul id="friend-requests" class="list-group mb-4"></ul>
-
-                <h4>Friends</h4>
-                <ul id="friends-list" class="list-group"></ul>
             </aside>
 
             <!-- Main Content -->
