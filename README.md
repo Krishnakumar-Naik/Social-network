@@ -15,5 +15,13 @@ Node.js & Express.js for handling API requests
 MySQL for storing chat messages
 
 
+🔥 Future Improvements
+
+Add private messaging between users
+
+Implement real-time WebSockets for instant updates
+
+Add user authentication & profile system
+
 ⚙️ Features
 ✅ User Authentication (Basic session-based login)✅ Real-time Chatting (Auto-refresh messages every 2 seconds)✅ Messages Stored in MySQL✅ Bootstrap-Based UI for responsive design✅ Clean & Simple Codebase for easy understanding
