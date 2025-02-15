@@ -4,12 +4,11 @@ Mini Social Media
 
 This is a mini social media platform where users can chat with others in a group chat format. The platform allows users to send and receive messages in real-time. It features a clean and modern design using Bootstrap and a Node.js + MySQL backend to store user messages.
 
+
 🛠️ Technologies Used
 
 Frontend:
-
 HTML, CSS, JavaScript (Bootstrap for styling)
-
 AJAX (Fetch API) for sending and receiving chat messages
 
 Backend:
