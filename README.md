@@ -9,6 +9,7 @@ This is a mini social media platform where users can chat with others in a group
 
 Frontend:
 HTML, CSS, JavaScript (Bootstrap for styling)
+
 AJAX (Fetch API) for sending and receiving chat messages
 
 Backend:
