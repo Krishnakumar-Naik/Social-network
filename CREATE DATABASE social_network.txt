@@ -1,3 +1,6 @@
+//Create a database for managing tha data and the required tables for storing the data in the right way
+//here MySql is used
+
 CREATE DATABASE social_network;
 USE social_network;
 
