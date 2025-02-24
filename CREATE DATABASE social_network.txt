@@ -2,6 +2,8 @@
 //here MySql is used
 
 CREATE DATABASE social_network;
+
+//use the database
 USE social_network;
 
 CREATE TABLE users (
