@@ -17,6 +17,7 @@ const db = mysql.createConnection({
     database: 'social_network'
 });
 
+// check connection
 db.connect(err => {
     if (err) {
         console.error('MySQL Connection Error: ' + err.message);
