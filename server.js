@@ -1,5 +1,3 @@
-// initialize
-
 const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
@@ -69,7 +67,7 @@ app.post('/send-chat-message', (req, res) => {
     });
 });
 
-
+// use uploade do;der
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Middleware
