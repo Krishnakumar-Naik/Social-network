@@ -1,4 +1,4 @@
-Mini Social Media
+#Mini Social Media
 
 📌 Project Overview
 
