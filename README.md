@@ -18,7 +18,7 @@ Node.js & Express.js for handling API requests
 
 MySQL for storing chat messages
 
-⚙️ Features
+## ⚙️ Features
 
 ✅ User Authentication (Basic session-based login)
 ✅ Add any post with caption
