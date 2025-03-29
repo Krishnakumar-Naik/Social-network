@@ -28,7 +28,7 @@ MySQL for storing chat messages
 ✅ Clean & Simple Codebase for easy understanding
 
 
-🔥 Future Improvements
+## 🔥 Future Improvements
 
 Add private messaging between users
 
