@@ -7,12 +7,12 @@ This is a mini social media platform where users can chat with others in a group
 
 ## 🛠️ Technologies Used
 
-# Frontend:
+Frontend:
 HTML, CSS, JavaScript (Bootstrap for styling)
 
 AJAX (Fetch API) for sending and receiving chat messages
 
-# Backend:
+Backend:
 
 Node.js & Express.js for handling API requests
 
