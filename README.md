@@ -30,8 +30,8 @@ MySQL for storing chat messages
 
 ## 🔥 Future Improvements
 
-Add private messaging between users
+Private messaging between users will be added
 
-Implement real-time WebSockets for instant updates
+Implementation of real-time WebSockets for instant updates
 
-Add user authentication & profile system
+User authentication & profile system will be added
